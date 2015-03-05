@@ -6,6 +6,8 @@ class User < ActiveRecord::Base
 
   has_many :likes
 
+  after_create :send_mail
+
   # A random user I haven't like or unlike yet
   def random_friend
     restricted_ids = self.likes.pluck(:friend_id) << self.id
@@ -14,5 +16,9 @@ class User < ActiveRecord::Base
 
   def liked?(user)
     likes.find_by_friend_id(user.id)
+  end
+
+  def send_mail
+    UserMailer.welcome_email(self).deliver
   end
 end
